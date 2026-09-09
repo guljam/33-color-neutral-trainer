@@ -111,6 +111,10 @@
 
     .mystery-wrap {
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
     }
 
     .mystery-square {
@@ -203,6 +207,65 @@
       font-size: 13px;
       color: #999;
     }
+
+    .lock-panel {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      background: #111;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 0 auto 24px auto;
+      max-width: 460px;
+    }
+
+    .lock-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .face-option-btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 2px solid #666;
+      background: #000;
+      color: #eee;
+      cursor: pointer;
+      font-weight: bold;
+      min-width: 70px;
+    }
+
+    .face-option-btn.expanded {
+      border-color: #eee;
+    }
+
+    .lock-colors {
+      display: none;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .lock-colors.open {
+      display: flex;
+    }
+
+    .lock-swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      border: 1px solid #999;
+      cursor: pointer;
+    }
+
+    .lock-swatch:hover {
+      outline: 2px solid #fff;
+    }
   </style>
 </head>
 
@@ -214,6 +277,22 @@
     <div class="menu">
       <button id="btn-standard" class="scheme-btn active">표준</button>
       <button id="btn-japanese" class="scheme-btn">일본식</button>
+      <button id="btn-lock" class="scheme-btn">색깔고정</button>
+    </div>
+
+    <div class="lock-panel" id="lock-panel">
+      <div class="lock-row" data-face="U">
+        <button class="face-option-btn" data-face="U">U면</button>
+        <div class="lock-colors" data-face="U"></div>
+      </div>
+      <div class="lock-row" data-face="F">
+        <button class="face-option-btn" data-face="F">F면</button>
+        <div class="lock-colors" data-face="F"></div>
+      </div>
+      <div class="lock-row" data-face="D">
+        <button class="face-option-btn" data-face="D">D면</button>
+        <div class="lock-colors" data-face="D"></div>
+      </div>
     </div>
 
     <div class="question-title" id="question-title"></div>
@@ -272,9 +351,15 @@
     let answered = false;
     let score = { correct: 0, total: 0 };
 
+    let fixedFace = null;   // null | 'U' | 'F' | 'D'
+    let fixedColor = null;  // color key
+    let expandedFace = null;
+
     const questionTitle = document.getElementById('question-title');
     const quizRow = document.getElementById('quiz-row');
     const scoreEl = document.getElementById('score');
+    const lockBtn = document.getElementById('btn-lock');
+    const lockPanel = document.getElementById('lock-panel');
 
     function buildQuizDOM() {
       quizRow.innerHTML = '';
@@ -313,10 +398,16 @@
       const mysteryWrap = document.createElement('div');
       mysteryWrap.className = 'mystery-wrap';
       mysteryWrap.id = 'mystery-wrap';
+
+      const mysteryLabel = document.createElement('div');
+      mysteryLabel.className = 'face-label';
+      mysteryLabel.textContent = currentSide;
+
       const mysterySq = document.createElement('div');
       mysterySq.className = 'mystery-square';
       mysterySq.id = 'mystery-square';
       mysterySq.textContent = '?';
+      mysteryWrap.appendChild(mysteryLabel);
       mysteryWrap.appendChild(mysterySq);
 
       const problemGroup = document.createElement('div');
@@ -397,13 +488,93 @@
     }
 
     function newProblem() {
-      currentProblem = orientations[Math.floor(Math.random() * orientations.length)];
-      pairType = Math.random() < 0.5 ? 'UF' : 'FD';
+      const picked = pickOrientationAndPairType();
+      currentProblem = picked.orientation;
+      pairType = picked.pairType;
       currentSide = Math.random() < 0.5 ? 'L' : 'R';
       answered = false;
       buildQuizDOM();
       renderProblem();
     }
+
+    function pickOrientationAndPairType() {
+      if (!fixedFace) {
+        return {
+          orientation: orientations[Math.floor(Math.random() * orientations.length)],
+          pairType: Math.random() < 0.5 ? 'UF' : 'FD'
+        };
+      }
+      if (fixedFace === 'U') {
+        const filtered = orientations.filter(o => o.U === fixedColor);
+        return { orientation: filtered[Math.floor(Math.random() * filtered.length)], pairType: 'UF' };
+      }
+      if (fixedFace === 'D') {
+        const filtered = orientations.filter(o => o.D === fixedColor);
+        return { orientation: filtered[Math.floor(Math.random() * filtered.length)], pairType: 'FD' };
+      }
+      // fixedFace === 'F'
+      const filtered = orientations.filter(o => o.F === fixedColor);
+      return {
+        orientation: filtered[Math.floor(Math.random() * filtered.length)],
+        pairType: Math.random() < 0.5 ? 'UF' : 'FD'
+      };
+    }
+
+    function buildLockPanel() {
+      document.querySelectorAll('.lock-colors').forEach(container => {
+        container.innerHTML = '';
+        const face = container.dataset.face;
+        COLORS.forEach(c => {
+          const sw = document.createElement('div');
+          sw.className = 'lock-swatch';
+          sw.style.background = c.hex;
+          sw.title = c.name;
+          sw.addEventListener('click', () => {
+            fixedFace = face;
+            fixedColor = c.key;
+            lockPanel.style.display = 'none';
+            expandedFace = null;
+            lockBtn.textContent = '색깔 고정 해제';
+            newProblem();
+          });
+          container.appendChild(sw);
+        });
+      });
+    }
+
+    document.querySelectorAll('.face-option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const face = btn.dataset.face;
+        const isOpen = expandedFace === face;
+        document.querySelectorAll('.face-option-btn').forEach(b => b.classList.remove('expanded'));
+        document.querySelectorAll('.lock-colors').forEach(c => c.classList.remove('open'));
+        if (!isOpen) {
+          expandedFace = face;
+          btn.classList.add('expanded');
+          document.querySelector(`.lock-colors[data-face="${face}"]`).classList.add('open');
+        } else {
+          expandedFace = null;
+        }
+      });
+    });
+
+    lockBtn.addEventListener('click', () => {
+      if (fixedFace) {
+        // 고정 해제
+        fixedFace = null;
+        fixedColor = null;
+        expandedFace = null;
+        lockBtn.textContent = '색깔고정';
+        lockPanel.style.display = 'none';
+        document.querySelectorAll('.face-option-btn').forEach(b => b.classList.remove('expanded'));
+        document.querySelectorAll('.lock-colors').forEach(c => c.classList.remove('open'));
+        newProblem();
+      } else {
+        lockPanel.style.display = lockPanel.style.display === 'flex' ? 'none' : 'flex';
+      }
+    });
+
+    buildLockPanel();
 
     function switchScheme(scheme) {
       currentScheme = scheme;
