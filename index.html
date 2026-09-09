@@ -130,6 +130,12 @@
       opacity: 0.5;
     }
 
+    .option-btn.hint-disabled {
+      pointer-events: none;
+      opacity: 0.38;
+      cursor: default;
+    }
+
     .option-btn.next-btn {
       pointer-events: auto;
       opacity: 1;
@@ -399,8 +405,21 @@
       optionsEl.querySelectorAll('.option-btn').forEach((btn, index) => {
         const c = COLORS[index];
         btn.removeEventListener('click', newProblem);
-        btn.classList.remove('disabled', 'next-btn');
+        btn.classList.remove('disabled', 'next-btn', 'hint-disabled');
         btn.innerHTML = `<span class="swatch" style="background:${c.hex}"></span><span class="option-label">${c.name}</span>`;
+      });
+    }
+
+    function disableHintColorButtons() {
+      const shownColors = new Set([
+        isUFPair() ? currentProblem.U : currentProblem.D,
+        currentProblem.F
+      ]);
+
+      optionsEl.querySelectorAll('.option-btn').forEach(btn => {
+        if (shownColors.has(btn.dataset.key)) {
+          btn.classList.add('hint-disabled');
+        }
       });
     }
 
@@ -451,6 +470,7 @@
       previousProblemKey = nextProblemKey;
       answered = false;
       resetOptionButtons();
+      disableHintColorButtons();
       showCurrentCube(false);
       renderProblem();
     }
