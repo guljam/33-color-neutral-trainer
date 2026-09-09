@@ -13,7 +13,7 @@
     body {
       margin: 0;
       font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-      background: #000000;
+      background: #000;
       color: #eee;
       display: flex;
       justify-content: center;
@@ -22,18 +22,13 @@
     .container {
       width: 100%;
       max-width: 640px;
-      padding-top: 100px;
-      padding-bottom: 60px;
-      padding-left: 20px;
-      padding-right: 20px;
+      padding: 60px 20px;
       text-align: center;
     }
 
     .page-title {
-      color: #ffffff;
       font-size: 24px;
       font-weight: bold;
-      text-align: center;
       margin-bottom: 30px;
     }
 
@@ -65,80 +60,31 @@
       font-size: 16px;
       font-weight: bold;
       margin-bottom: 24px;
-      color: #fff;
     }
 
     .quiz-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 50px;
+      gap: 40px;
       margin-bottom: 24px;
       flex-wrap: wrap;
     }
 
-    .problem-group {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .square-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .face-label {
-      font-size: 20px;
-      font-weight: bold;
-      color: #ccc;
-    }
-
-    .square {
-      width: 90px;
-      height: 90px;
-      border: 3px solid #888;
-      border-radius: 8px;
-    }
-
-    .mystery-wrap {
+    .cube-wrap {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      width: 288px;
+      height: 288px;
     }
 
-    .mystery-square {
-      width: 90px;
-      height: 90px;
-      border: 3px dashed #888;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      font-weight: bold;
-      color: #888;
-      background: #0a0a0a;
-    }
-
-    .mystery-square.revealed {
-      border-style: solid;
-      color: transparent;
+    .cube-svg {
+      width: 100%;
+      height: 100%;
     }
 
     .popup {
       position: absolute;
-      top: -34px;
+      top: -30px;
       left: 50%;
       transform: translateX(-50%);
       padding: 4px 12px;
@@ -146,7 +92,6 @@
       font-size: 13px;
       font-weight: bold;
       color: #fff;
-      white-space: nowrap;
     }
 
     .popup.popup-correct {
@@ -174,7 +119,6 @@
       background: #111;
       cursor: pointer;
       font-size: 15px;
-      color: #eee;
     }
 
     .option-btn:hover {
@@ -200,7 +144,6 @@
       height: 22px;
       border-radius: 4px;
       border: 1px solid #aaa;
-      flex-shrink: 0;
     }
 
     .score {
@@ -217,7 +160,7 @@
       border: 1px solid #444;
       border-radius: 10px;
       padding: 14px;
-      margin: 0 auto 24px auto;
+      margin: 0 auto 24px;
       max-width: 460px;
     }
 
@@ -225,9 +168,6 @@
       display: flex;
       align-items: center;
       gap: 14px;
-      width: 100%;
-      justify-content: center;
-      flex-wrap: wrap;
     }
 
     .face-option-btn {
@@ -238,17 +178,11 @@
       color: #eee;
       cursor: pointer;
       font-weight: bold;
-      min-width: 70px;
-    }
-
-    .face-option-btn.expanded {
-      border-color: #eee;
     }
 
     .lock-colors {
       display: none;
       gap: 6px;
-      flex-wrap: wrap;
     }
 
     .lock-colors.open {
@@ -262,18 +196,12 @@
       border: 1px solid #999;
       cursor: pointer;
     }
-
-    .lock-swatch:hover {
-      outline: 2px solid #fff;
-    }
   </style>
 </head>
 
 <body>
   <div class="container">
-
     <div class="page-title">rubiks cube color neutral trainer</div>
-
     <div class="menu">
       <button id="btn-standard" class="scheme-btn active">표준</button>
       <button id="btn-japanese" class="scheme-btn">일본식</button>
@@ -281,28 +209,20 @@
     </div>
 
     <div class="lock-panel" id="lock-panel">
-      <div class="lock-row" data-face="U">
-        <button class="face-option-btn" data-face="U">U면</button>
+      <div class="lock-row" data-face="U"><button class="face-option-btn" data-face="U">U면</button>
         <div class="lock-colors" data-face="U"></div>
       </div>
-      <div class="lock-row" data-face="F">
-        <button class="face-option-btn" data-face="F">F면</button>
+      <div class="lock-row" data-face="F"><button class="face-option-btn" data-face="F">F면</button>
         <div class="lock-colors" data-face="F"></div>
       </div>
-      <div class="lock-row" data-face="D">
-        <button class="face-option-btn" data-face="D">D면</button>
+      <div class="lock-row" data-face="D"><button class="face-option-btn" data-face="D">D면</button>
         <div class="lock-colors" data-face="D"></div>
       </div>
     </div>
 
     <div class="question-title" id="question-title"></div>
-
-    <div class="quiz-row" id="quiz-row">
-      <!-- problem-group과 options가 JS에서 순서대로 삽입됨 -->
-    </div>
-
+    <div class="quiz-row" id="quiz-row"></div>
     <div class="score" id="score">맞은 개수: 0 / 0</div>
-
   </div>
 
   <script>
@@ -315,8 +235,6 @@
       { key: 'orange', name: '주황', hex: '#FF5800' }
     ];
     const colorMap = Object.fromEntries(COLORS.map(c => [c.key, c]));
-
-    // 기준 배치 (풀린 상태). 일본식은 노랑/파랑 위치만 서로 바뀜.
     const SCHEMES = {
       standard: { U: 'white', D: 'yellow', F: 'green', B: 'blue', L: 'orange', R: 'red' },
       japanese: { U: 'white', D: 'blue', F: 'green', B: 'yellow', L: 'orange', R: 'red' }
@@ -334,10 +252,7 @@
         const cur = queue.shift();
         for (const next of [rotateX(cur), rotateY(cur)]) {
           const k = key(next);
-          if (!seen.has(k)) {
-            seen.set(k, next);
-            queue.push(next);
-          }
+          if (!seen.has(k)) { seen.set(k, next); queue.push(next); }
         }
       }
       return Array.from(seen.values());
@@ -345,110 +260,152 @@
 
     let currentScheme = 'standard';
     let orientations = generateOrientations(SCHEMES[currentScheme]);
-    let currentProblem = null;
-    let pairType = null;   // 'UF' or 'FD'
-    let currentSide = null; // 'L' or 'R'
-    let answered = false;
-    let score = { correct: 0, total: 0 };
+    let currentProblem = null, pairType = null, currentSide = null, answered = false;
+    let previousProblemKey = null;
+    let score = { correct: 0, total: 0 }, fixedFace = null, fixedColor = null, expandedFace = null;
 
-    let fixedFace = null;   // null | 'U' | 'F' | 'D'
-    let fixedColor = null;  // color key
-    let expandedFace = null;
+    // 큐브의 기하 도형은 UF-L / UF-R / FD-L / FD-R 네 종류뿐이므로
+    // 처음 한 번만 생성해 캐시하고, 이후에는 중앙 스티커의 fill과 ?만 갱신한다.
+    const cubeCache = new Map();
+    let cubeWrap = null;
+    let optionsEl = null;
 
-    const questionTitle = document.getElementById('question-title');
-    const quizRow = document.getElementById('quiz-row');
-    const scoreEl = document.getElementById('score');
-    const lockBtn = document.getElementById('btn-lock');
-    const lockPanel = document.getElementById('lock-panel');
+    function createCubeSVG(pair, side) {
+      const isUF = pair === 'UF';
+      const isL = side === 'L';
+      const stroke = '#1a1a1a';
+      const strokeW = '1.8';
+      const bgBlock = '#333333';
+      const cx = 120, cy = 120;
 
-    function buildQuizDOM() {
-      quizRow.innerHTML = '';
+      const yaw = (isL ? 32 : -32) * Math.PI / 180;
+      const pitch = (isUF ? 20 : -20) * Math.PI / 180;
+      const cameraDistance = 5.0;
+      const focalLength = 285;
 
-      const topLabelText = pairType === 'UF' ? 'U' : 'F';
-      const bottomLabelText = pairType === 'UF' ? 'F' : 'D';
-
-      const stack = document.createElement('div');
-      stack.className = 'stack';
-
-      const topBox = document.createElement('div');
-      topBox.className = 'square-box';
-      const topLabel = document.createElement('div');
-      topLabel.className = 'face-label';
-      topLabel.textContent = topLabelText;
-      const topSq = document.createElement('div');
-      topSq.className = 'square';
-      topSq.id = 'square-top';
-      topBox.appendChild(topLabel);
-      topBox.appendChild(topSq);
-
-      const bottomBox = document.createElement('div');
-      bottomBox.className = 'square-box';
-      const bottomLabel = document.createElement('div');
-      bottomLabel.className = 'face-label';
-      bottomLabel.textContent = bottomLabelText;
-      const bottomSq = document.createElement('div');
-      bottomSq.className = 'square';
-      bottomSq.id = 'square-bottom';
-      bottomBox.appendChild(bottomLabel);
-      bottomBox.appendChild(bottomSq);
-
-      stack.appendChild(topBox);
-      stack.appendChild(bottomBox);
-
-      const mysteryWrap = document.createElement('div');
-      mysteryWrap.className = 'mystery-wrap';
-      mysteryWrap.id = 'mystery-wrap';
-
-      const mysteryLabel = document.createElement('div');
-      mysteryLabel.className = 'face-label';
-      mysteryLabel.textContent = currentSide;
-
-      const mysterySq = document.createElement('div');
-      mysterySq.className = 'mystery-square';
-      mysterySq.id = 'mystery-square';
-      mysterySq.textContent = '?';
-      mysteryWrap.appendChild(mysteryLabel);
-      mysteryWrap.appendChild(mysterySq);
-
-      const problemGroup = document.createElement('div');
-      problemGroup.className = 'problem-group';
-
-      if (currentSide === 'L') {
-        problemGroup.appendChild(mysteryWrap);
-        problemGroup.appendChild(stack);
-      } else {
-        problemGroup.appendChild(stack);
-        problemGroup.appendChild(mysteryWrap);
+      function project([x, y, z]) {
+        const x1 = x * Math.cos(yaw) + z * Math.sin(yaw);
+        const z1 = -x * Math.sin(yaw) + z * Math.cos(yaw);
+        const y2 = y * Math.cos(pitch) - z1 * Math.sin(pitch);
+        const z2 = y * Math.sin(pitch) + z1 * Math.cos(pitch);
+        const scale = focalLength / (cameraDistance - z2);
+        return [cx + x1 * scale, cy - y2 * scale];
       }
 
-      const optionsEl = document.createElement('div');
+      function drawFace(pts, fill, role = '') {
+        const roleAttr = role ? ` data-role="${role}"` : '';
+        return `<polygon${roleAttr} points="${pts.map(p => p.join(',')).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeW}" stroke-linejoin="round"/>`;
+      }
+
+      function drawGrid3D(pointAt, centerRole) {
+        let str = '';
+        for (let r = 0; r < 3; r++) {
+          for (let c = 0; c < 3; c++) {
+            const u0 = r / 3, u1 = (r + 1) / 3;
+            const v0 = c / 3, v1 = (c + 1) / 3;
+            const q = [
+              project(pointAt(u0, v0)),
+              project(pointAt(u1, v0)),
+              project(pointAt(u1, v1)),
+              project(pointAt(u0, v1))
+            ];
+            const isCenter = r === 1 && c === 1;
+            str += drawFace(q, bgBlock, isCenter ? centerRole : '');
+
+            if (isCenter && centerRole === 'side-center') {
+              const center = project(pointAt(0.5, 0.5));
+              str += `<text data-role="side-question" x="${center[0]}" y="${center[1] + 4}" font-size="18" font-weight="bold" fill="#888" text-anchor="middle" dominant-baseline="middle">?</text>`;
+            }
+          }
+        }
+        return str;
+      }
+
+      const frontPoint = (u, v) => [-1 + 2 * v, 1 - 2 * u, 1];
+      const topPoint = (u, v) => [-1 + 2 * v, 1, -1 + 2 * u];
+      const bottomPoint = (u, v) => [-1 + 2 * v, -1, 1 - 2 * u];
+      const sidePoint = isL
+        ? ((u, v) => [-1, 1 - 2 * u, -1 + 2 * v])
+        : ((u, v) => [1, 1 - 2 * u, 1 - 2 * v]);
+
+      let svgText = `<svg class="cube-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">`;
+      if (isUF) {
+        svgText += drawGrid3D(topPoint, 'vertical-center');
+        svgText += drawGrid3D(frontPoint, 'front-center');
+      } else {
+        svgText += drawGrid3D(bottomPoint, 'vertical-center');
+        svgText += drawGrid3D(frontPoint, 'front-center');
+      }
+      svgText += drawGrid3D(sidePoint, 'side-center');
+      svgText += `</svg>`;
+
+      const template = document.createElement('template');
+      template.innerHTML = svgText.trim();
+      return template.content.firstElementChild;
+    }
+
+    function initializeCubeCache() {
+      for (const pair of ['UF', 'FD']) {
+        for (const side of ['L', 'R']) {
+          cubeCache.set(`${pair}-${side}`, createCubeSVG(pair, side));
+        }
+      }
+    }
+
+    function showCurrentCube(isRevealed = false) {
+      const key = `${pairType}-${currentSide}`;
+      const svg = cubeCache.get(key);
+      const verticalCenter = svg.querySelector('[data-role="vertical-center"]');
+      const frontCenter = svg.querySelector('[data-role="front-center"]');
+      const sideCenter = svg.querySelector('[data-role="side-center"]');
+      const questionMark = svg.querySelector('[data-role="side-question"]');
+
+      verticalCenter.setAttribute('fill', colorMap[isUFPair() ? currentProblem.U : currentProblem.D].hex);
+      frontCenter.setAttribute('fill', colorMap[currentProblem.F].hex);
+      sideCenter.setAttribute('fill', isRevealed ? colorMap[currentProblem[currentSide]].hex : '#333333');
+      questionMark.style.display = isRevealed ? 'none' : '';
+
+      cubeWrap.replaceChildren(svg);
+    }
+
+    function isUFPair() {
+      return pairType === 'UF';
+    }
+
+    function buildQuizDOM() {
+      const quizRow = document.getElementById('quiz-row');
+      quizRow.innerHTML = '';
+
+      cubeWrap = document.createElement('div');
+      cubeWrap.className = 'cube-wrap';
+      cubeWrap.id = 'cube-wrap';
+
+      optionsEl = document.createElement('div');
       optionsEl.className = 'options';
-      optionsEl.id = 'options';
       COLORS.forEach(c => {
         const btn = document.createElement('div');
         btn.className = 'option-btn';
         btn.dataset.key = c.key;
-        btn.innerHTML = `<span class="swatch" style="background:${c.hex}"></span><span class="label-text">${c.name}</span>`;
+        btn.innerHTML = `<span class="swatch" style="background:${c.hex}"></span><span class="option-label">${c.name}</span>`;
         btn.addEventListener('click', () => selectAnswer(c.key, btn));
         optionsEl.appendChild(btn);
       });
 
-      quizRow.appendChild(problemGroup);
+      quizRow.appendChild(cubeWrap);
       quizRow.appendChild(optionsEl);
     }
 
+    function resetOptionButtons() {
+      optionsEl.querySelectorAll('.option-btn').forEach((btn, index) => {
+        const c = COLORS[index];
+        btn.removeEventListener('click', newProblem);
+        btn.classList.remove('disabled', 'next-btn');
+        btn.innerHTML = `<span class="swatch" style="background:${c.hex}"></span><span class="option-label">${c.name}</span>`;
+      });
+    }
+
     function renderProblem() {
-      const topKey = pairType === 'UF' ? currentProblem.U : currentProblem.F;
-      const bottomKey = pairType === 'UF' ? currentProblem.F : currentProblem.D;
-      document.getElementById('square-top').style.background = colorMap[topKey].hex;
-      document.getElementById('square-bottom').style.background = colorMap[bottomKey].hex;
-
-      const mysterySq = document.getElementById('mystery-square');
-      mysterySq.classList.remove('revealed');
-      mysterySq.style.background = '#0a0a0a';
-      mysterySq.textContent = '?';
-
-      questionTitle.textContent = currentSide === 'L' ? '왼쪽 면의 색은?' : '오른쪽 면의 색은?';
+      document.getElementById('question-title').textContent = currentSide === 'L' ? '왼쪽 면(?)의 색은?' : '오른쪽 면(?)의 색은?';
     }
 
     function selectAnswer(selectedKey, btnEl) {
@@ -459,50 +416,48 @@
       const correctKey = currentProblem[currentSide];
       const isCorrect = selectedKey === correctKey;
 
-      const mysteryWrap = document.getElementById('mystery-wrap');
-      const mysterySq = document.getElementById('mystery-square');
+      showCurrentCube(true);
 
-      // 정답 색을 즉시 점선 사각형 안에 표시
-      mysterySq.classList.add('revealed');
-      mysterySq.style.background = colorMap[correctKey].hex;
-      mysterySq.textContent = '';
-
-      // 정답/오답 팝업을 점선 사각형 위에 표시
       const popup = document.createElement('div');
       popup.className = 'popup ' + (isCorrect ? 'popup-correct' : 'popup-wrong');
       popup.textContent = isCorrect ? '정답' : '오답';
-      mysteryWrap.appendChild(popup);
+      cubeWrap.appendChild(popup);
 
       document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
 
-      if (isCorrect) {
-        score.correct++;
-      }
-      scoreEl.textContent = `맞은 개수: ${score.correct} / ${score.total}`;
+      if (isCorrect) score.correct++;
+      document.getElementById('score').textContent = `맞은 개수: ${score.correct} / ${score.total}`;
 
-      // 정답/오답 관계없이 클릭한 버튼을 "다음문제" 버튼으로 전환
       btnEl.classList.remove('disabled');
       btnEl.classList.add('next-btn');
-      btnEl.innerHTML = `<span class="label-text">다음문제</span>`;
+      btnEl.innerHTML = `<span>다음문제</span>`;
       btnEl.addEventListener('click', newProblem, { once: true });
     }
 
     function newProblem() {
-      const picked = pickOrientationAndPairType();
+      let picked, nextSide, nextProblemKey;
+      let attempts = 0;
+
+      do {
+        picked = pickOrientationAndPairType();
+        nextSide = Math.random() < 0.5 ? 'L' : 'R';
+        nextProblemKey = `${key(picked.orientation)}|${picked.pairType}|${nextSide}`;
+        attempts++;
+      } while (nextProblemKey === previousProblemKey && attempts < 100);
+
       currentProblem = picked.orientation;
       pairType = picked.pairType;
-      currentSide = Math.random() < 0.5 ? 'L' : 'R';
+      currentSide = nextSide;
+      previousProblemKey = nextProblemKey;
       answered = false;
-      buildQuizDOM();
+      resetOptionButtons();
+      showCurrentCube(false);
       renderProblem();
     }
 
     function pickOrientationAndPairType() {
       if (!fixedFace) {
-        return {
-          orientation: orientations[Math.floor(Math.random() * orientations.length)],
-          pairType: Math.random() < 0.5 ? 'UF' : 'FD'
-        };
+        return { orientation: orientations[Math.floor(Math.random() * orientations.length)], pairType: Math.random() < 0.5 ? 'UF' : 'FD' };
       }
       if (fixedFace === 'U') {
         const filtered = orientations.filter(o => o.U === fixedColor);
@@ -512,12 +467,8 @@
         const filtered = orientations.filter(o => o.D === fixedColor);
         return { orientation: filtered[Math.floor(Math.random() * filtered.length)], pairType: 'FD' };
       }
-      // fixedFace === 'F'
       const filtered = orientations.filter(o => o.F === fixedColor);
-      return {
-        orientation: filtered[Math.floor(Math.random() * filtered.length)],
-        pairType: Math.random() < 0.5 ? 'UF' : 'FD'
-      };
+      return { orientation: filtered[Math.floor(Math.random() * filtered.length)], pairType: Math.random() < 0.5 ? 'UF' : 'FD' };
     }
 
     function buildLockPanel() {
@@ -528,13 +479,11 @@
           const sw = document.createElement('div');
           sw.className = 'lock-swatch';
           sw.style.background = c.hex;
-          sw.title = c.name;
           sw.addEventListener('click', () => {
             fixedFace = face;
             fixedColor = c.key;
-            lockPanel.style.display = 'none';
-            expandedFace = null;
-            lockBtn.textContent = '색깔 고정 해제';
+            document.getElementById('lock-panel').style.display = 'none';
+            document.getElementById('btn-lock').textContent = '색깔 고정 해제';
             newProblem();
           });
           container.appendChild(sw);
@@ -546,28 +495,20 @@
       btn.addEventListener('click', () => {
         const face = btn.dataset.face;
         const isOpen = expandedFace === face;
-        document.querySelectorAll('.face-option-btn').forEach(b => b.classList.remove('expanded'));
         document.querySelectorAll('.lock-colors').forEach(c => c.classList.remove('open'));
         if (!isOpen) {
           expandedFace = face;
-          btn.classList.add('expanded');
           document.querySelector(`.lock-colors[data-face="${face}"]`).classList.add('open');
-        } else {
-          expandedFace = null;
-        }
+        } else expandedFace = null;
       });
     });
 
-    lockBtn.addEventListener('click', () => {
+    document.getElementById('btn-lock').addEventListener('click', () => {
+      const lockPanel = document.getElementById('lock-panel');
       if (fixedFace) {
-        // 고정 해제
-        fixedFace = null;
-        fixedColor = null;
-        expandedFace = null;
-        lockBtn.textContent = '색깔고정';
+        fixedFace = fixedColor = expandedFace = null;
+        document.getElementById('btn-lock').textContent = '색깔고정';
         lockPanel.style.display = 'none';
-        document.querySelectorAll('.face-option-btn').forEach(b => b.classList.remove('expanded'));
-        document.querySelectorAll('.lock-colors').forEach(c => c.classList.remove('open'));
         newProblem();
       } else {
         lockPanel.style.display = lockPanel.style.display === 'flex' ? 'none' : 'flex';
@@ -575,17 +516,24 @@
     });
 
     buildLockPanel();
+    initializeCubeCache();
+    buildQuizDOM();
 
-    function switchScheme(scheme) {
-      currentScheme = scheme;
-      document.getElementById('btn-standard').classList.toggle('active', scheme === 'standard');
-      document.getElementById('btn-japanese').classList.toggle('active', scheme === 'japanese');
-      orientations = generateOrientations(SCHEMES[scheme]);
+    document.getElementById('btn-standard').addEventListener('click', () => {
+      currentScheme = 'standard';
+      document.getElementById('btn-standard').classList.add('active');
+      document.getElementById('btn-japanese').classList.remove('active');
+      orientations = generateOrientations(SCHEMES.standard);
       newProblem();
-    }
+    });
 
-    document.getElementById('btn-standard').addEventListener('click', () => switchScheme('standard'));
-    document.getElementById('btn-japanese').addEventListener('click', () => switchScheme('japanese'));
+    document.getElementById('btn-japanese').addEventListener('click', () => {
+      currentScheme = 'japanese';
+      document.getElementById('btn-japanese').classList.add('active');
+      document.getElementById('btn-standard').classList.remove('active');
+      orientations = generateOrientations(SCHEMES.japanese);
+      newProblem();
+    });
 
     newProblem();
   </script>
